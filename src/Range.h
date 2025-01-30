@@ -31,7 +31,7 @@ class Range {
 		T average();
 		T max();
 		T min();
-		friend ostream& operator<<(ostream&, const Range<T>&);
+		friend ostream& operator<< <>(ostream&, const Range<T>&);
 };
 
 
@@ -39,6 +39,11 @@ template <class T>
 Range<T> Range<T>::noStep(Range<T>& r) {
 	for (T i = r.start; i <= r.end; i++) {
 		cout << i << " " << endl;
+	}
+	else {
+		for (T i = r.start, i >= r.end; i-= step) {
+			cout << i << " " << endl;
+		}
 	}
 	cout << endl;
 	
@@ -49,21 +54,33 @@ Range<T> Range <T>::yesStep(Range<T>& r) {
 	for (T i = r.start; i <= r.end; i += r.step) {
 		cout << i << " " << endl;
 	}
+	else {
+		for (T i = r.start; i >= r.end; i += r.step) {
+			cout << i << " " << endl;
+		}
+	}
 	cout << endl;
 	
 }
 
-
-int Range<int>::length() {
-	int length = ((end - start) + step - 1) / step;
+template<class T>
+int Range<T>::length() {
+	int length = (((abs(end - start)) / abs(step)) + 1);
 	return length;
 }
 
 template <class T>
 T Range <T>::sum() {
 	T sum = 0;
-	for (T i = start; i < end; i += step) {
-		sum += i;
+	if (step > 0) {
+		for (T i = start; i <= end; i += step) {
+			sum += i;
+		}
+	}
+	else {
+		for (T i = start; i >= end; i += step) {
+			sum += i;
+		}
 	}
 	return sum;
 
@@ -73,41 +90,58 @@ template <class T>
 T Range<T>::average() {
 	T len = length();
 	T total = sum();
-	int average = total/ len;
-	return average;
+	return total / len;
 }
 
 template <class T>
 T Range <T>::min() {
 	T min;
-	if (start > end) {
-		min = end;
+	if (step > 0) {
+		return start;
 	}
-	else if (end > start) {
-		min = start;
+	else {
+		T lastValue = start;
+		while (lastValue + step >= end) {
+			lastValue += step;
+		}
+		return lastValue;
+
 	}
-	return min;
 }
 
 template <class T>
 T Range<T>::max() {
 	T max;
-	if (start > end) {
-		max = start;
+	if (step > 0) {
+		T lastValue = start;
+		while (lastValue + step <= end) {
+			lastValue += step;
+		}
+		return lastValue;
 	}
-	if (end > start) {
-		max = end;
+	else {
+		return start;
 	}
-	return max;
+
 }
 
 template <class T>
 ostream& operator<<(ostream& out, const Range<T>& r) {
-	for (T i = r.start; i <= r.end; i += r.step) {
-		if (i != r.start) {
-			out << ", ";
+	if (r.step > 0) {
+		for (T i = r.start; i <= r.end; i += r.step) {
+			if (i != r.start) {
+				out << ", ";
+			}
+			out << i;
 		}
-		out << i;
+	}
+	else {
+		for (T i = r.start; i >= r.end; i += r.step) {
+			if (i != r.start) {
+				out << ", ";
+			}
+			out << i;
+		}
 	}
 	out << endl;
 	return out;
